@@ -1,4 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0
+/*
+ * Simple notification mechanism: kernel <-> userspace
+ * No payload in notification messages, just the notification event.
+ */
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/poll.h>
@@ -28,6 +32,7 @@ static ssize_t event_send(struct file *file, char __user *user_buffer,
                           size_t length, loff_t *offset)
 {
 	static const uint8_t event = 0xFF;
+	// copy_to_user: must pass something (1B), otherwise ignored
 	if (copy_to_user(user_buffer, &event, sizeof(event))) {
 		return -EFAULT;
 	}
