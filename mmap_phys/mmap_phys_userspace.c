@@ -6,21 +6,27 @@
 static const size_t BUFFER_SIZE = 256;
 static const char DEVICE[] = "/dev/mmap_phys_dev";
 
+static int handle_err(const char *msg)
+{
+	static const int ERR = -1;
+	char err_buffer[BUFFER_SIZE];
+	snprintf(err_buffer, BUFFER_SIZE,
+	         "%s:%s",
+	         msg, DEVICE);
+	perror(err_buffer);
+	return ERR;
+}
+
 int main()
 {
 	size_t const PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
 	size_t const MAPPED_MEM_SIZE = PAGE_SIZE;
 	off_t const MAPPED_MEM_OFFSET = MAPPED_MEM_SIZE;
-
+	// get device related file descriptor
 	int fd = open(DEVICE, O_RDWR);
-	if (fd < 0) {
-		char err_buffer[BUFFER_SIZE];
-		snprintf(err_buffer, BUFFER_SIZE,
-		         "Failed to open device:%s",
-		         DEVICE);
-		perror(err_buffer);
-		return 1;
-	}
+	if (fd < 0)
+		return handle_err("Failed to open device");
+	// syscall:
 	// void *mmap(void addr, size_t length, int prot, int flags, int fd, off_t offset)
 	// addr = NULL: kernel choose page aligned addr
 	// lenght: size of the mapping in bytes
@@ -34,23 +40,25 @@ int main()
 	                    MAP_SHARED,
 	                    fd, MAPPED_MEM_OFFSET);
 
-	if (mapped == MAP_FAILED) {
-		char err_buffer[BUFFER_SIZE];
-		snprintf(err_buffer, BUFFER_SIZE,
-		         "Failed map memory:%s",
-		         DEVICE);
-		perror(err_buffer);
-		return 1;
-	}
+	if (mapped == MAP_FAILED)
+		return handle_err("Failed to map memory");
 
 	printf("Memory mapped at address %p\n", mapped);
 
-	// Example access to mapped memory
+	// access to mapped memory
 	((char *)mapped)[0] = 'A';
 	printf("Memory mapped wtire: %s\n", (char *)mapped);
-
-	munmap(mapped, MAPPED_MEM_SIZE);
-	close(fd);
+	// syscall:
+	// int munmap(void *addr, size_t length);
+	// rm mappings for the specified address range
+	// causes further references to addresses to reference invalid memory.
+	// Region automatically unmapped when the process is terminated.
+	// *Closing the file descriptor does not unmap the region*
+	// ret: 0 on success, -1 on failure
+	if (munmap(mapped, MAPPED_MEM_SIZE))
+		return handle_err("Failed to unmap memory");
+	if (close(fd))
+		return handle_err("Failed to close device");
 
 	return 0;
 }
