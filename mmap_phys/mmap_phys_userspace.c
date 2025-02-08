@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <string.h>
 
 static const size_t BUFFER_SIZE = 256;
 static const char DEVICE[] = "/dev/mmap_phys_dev";
@@ -43,11 +44,22 @@ int main()
 	if (mapped == MAP_FAILED)
 		return handle_err("Failed to map memory");
 
-	printf("Memory mapped at address %p\n", mapped);
+	printf("Memory mapped at address: 0x%lx, size: 0x%lx\n",
+	       (unsigned long *)mapped, MAPPED_MEM_SIZE);
 
-	// access to mapped memory
-	((char *)mapped)[0] = 'A';
-	printf("Memory mapped wtire: %s\n", (char *)mapped);
+	char message[BUFFER_SIZE];
+	memset(message, 0x00, BUFFER_SIZE);
+	for (size_t i = 0; (i < BUFFER_SIZE) && (0x30 + i < 0x7B); i++) {
+		message[i] = 0x030 + i;
+	}
+	// write directly to remapped physical memory
+	printf("Writing message: %s\n", message);
+	memcpy(mapped, message, BUFFER_SIZE);
+	// reset buffer
+	memset(message, 0x00, BUFFER_SIZE);
+	// read from remapped mem
+	memcpy(message, mapped, BUFFER_SIZE);
+	printf("Memory read usr: %s\n", message);
 	// syscall:
 	// int munmap(void *addr, size_t length);
 	// rm mappings for the specified address range
