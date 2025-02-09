@@ -22,3 +22,4 @@ include(cmake/tools/kernel.cmake)
 #=============================
 include(event/CMakeLists.txt)
 include(mmap_phys/CMakeLists.txt)
+include(mmap_ringbuffer/CMakeLists.txt)
