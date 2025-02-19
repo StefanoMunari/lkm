@@ -17,6 +17,7 @@ set(LKM_CMEM_SANITIZER "ON" CACHE BOOL "")
 include(cmake/tools/clang_sanitizer.cmake)
 include(cmake/tools/clang_tidy.cmake)
 include(cmake/tools/kernel.cmake)
+include(cmake/tools/fetch_content.cmake)
 #=============================
 # Modules
 #=============================
