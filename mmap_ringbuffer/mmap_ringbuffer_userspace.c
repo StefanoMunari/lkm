@@ -4,6 +4,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <string.h>
+#include "ring_buffer/ring_buffer.h"
 
 static const size_t BUFFER_SIZE = 256;
 static const char DEVICE[] = "/dev/mmap_ringbuffer_dev";
@@ -21,5 +22,6 @@ static int handle_err(const char *msg)
 
 int main()
 {
+	struct RingBuffer ring_buffer;
 	return 0;
 }
