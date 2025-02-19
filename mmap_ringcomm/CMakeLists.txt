@@ -1,4 +1,4 @@
-set(KERNEL_TARGET_NAME "mmap_ringbuffer")
+set(KERNEL_TARGET_NAME "mmap_ringcomm")
 set(MMAP_RINGBUFFER_DIR "${CMAKE_SOURCE_DIR}/${KERNEL_TARGET_NAME}")
 # commands to enable Clion syntax highlighting
 set(KERNEL_SYNTAX_HEADERS "${KERNEL_TARGET_NAME}_empty")
@@ -11,10 +11,10 @@ fetchcontent(ring_buff
         1
         0)
 add_executable(${KERNEL_SYNTAX_HEADERS}
-        ${MMAP_RINGBUFFER_DIR}/mmap_ringbuffer_dev.c
+        ${MMAP_RINGBUFFER_DIR}/mmap_ringcomm_dev.c
 )
 add_executable(${USER_TARGET_NAME}
-        ${MMAP_RINGBUFFER_DIR}/mmap_ringbuffer_userspace.c
+        ${MMAP_RINGBUFFER_DIR}/mmap_ringcomm_userspace.c
 )
 target_link_libraries(${USER_TARGET_NAME} PUBLIC ring_buff)
 target_include_directories(${KERNEL_SYNTAX_HEADERS}

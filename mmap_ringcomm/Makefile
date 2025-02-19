@@ -1,4 +1,4 @@
-obj-m += mmap_phys_dev.o
+obj-m += mmap_ringcomm_dev.o
 
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)

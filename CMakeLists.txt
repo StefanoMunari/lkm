@@ -23,4 +23,4 @@ include(cmake/tools/fetch_content.cmake)
 #=============================
 include(event/CMakeLists.txt)
 include(mmap_phys/CMakeLists.txt)
-include(mmap_ringbuffer/CMakeLists.txt)
+include(mmap_ringcomm/CMakeLists.txt)
